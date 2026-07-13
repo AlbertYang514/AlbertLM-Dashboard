@@ -1,0 +1,105 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B10000000000000000000001 /* AlbertLMDashboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001; };
+		B10000000000000000000002 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002; };
+		B10000000000000000000003 /* SSHService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003; };
+		B10000000000000000000004 /* AlbertLMNodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004; };
+		B10000000000000000000005 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000005; };
+		B10000000000000000000006 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006; };
+		B10000000000000000000007 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000007; };
+		B10000000000000000000008 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008; };
+		B10000000000000000000009 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009; };
+		B1000000000000000000000A /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000A; };
+		B1000000000000000000000B /* GPUView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000B; };
+		B1000000000000000000000C /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000C; };
+		B1000000000000000000000D /* CheckpointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000D; };
+		B1000000000000000000000E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000E; };
+		B1000000000000000000000F /* TeacherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000010; };
+		B10000000000000000000010 /* TeachersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011; };
+		B10000000000000000000011 /* ExperimentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012; };
+		B10000000000000000000012 /* DatasetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013; };
+		B10000000000000000000013 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014; };
+		B10000000000000000000014 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10000000000000000000001 /* AlbertLMDashboardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbertLMDashboardApp.swift; sourceTree = "<group>"; };
+		A10000000000000000000002 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		A10000000000000000000003 /* SSHService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHService.swift; sourceTree = "<group>"; };
+		A10000000000000000000004 /* AlbertLMNodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbertLMNodeService.swift; sourceTree = "<group>"; };
+		A10000000000000000000005 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		A10000000000000000000006 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		A10000000000000000000007 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A10000000000000000000008 /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
+		A10000000000000000000009 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A1000000000000000000000A /* TrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingView.swift; sourceTree = "<group>"; };
+		A1000000000000000000000B /* GPUView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUView.swift; sourceTree = "<group>"; };
+		A1000000000000000000000C /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
+		A1000000000000000000000D /* CheckpointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointsView.swift; sourceTree = "<group>"; };
+		A1000000000000000000000E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A1000000000000000000000F /* AlbertLM Dashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = "AlbertLM Dashboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000010 /* TeacherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeacherService.swift; sourceTree = "<group>"; };
+		A10000000000000000000011 /* TeachersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeachersView.swift; sourceTree = "<group>"; };
+		A10000000000000000000012 /* ExperimentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentsView.swift; sourceTree = "<group>"; };
+		A10000000000000000000013 /* DatasetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatasetsView.swift; sourceTree = "<group>"; };
+		A10000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A10000000000000000000015 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A10000000000000000000016 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C10000000000000000000001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D10000000000000000000001 = {isa = PBXGroup; children = (D10000000000000000000002, D10000000000000000000007); sourceTree = "<group>"; };
+		D10000000000000000000002 /* AlbertLMDashboard */ = {isa = PBXGroup; children = (D10000000000000000000003, D10000000000000000000004, D10000000000000000000005, D10000000000000000000006, D10000000000000000000008, D10000000000000000000009, A10000000000000000000014); path = AlbertLMDashboard; sourceTree = "<group>"; };
+		D10000000000000000000003 /* App */ = {isa = PBXGroup; children = (A10000000000000000000001); path = App; sourceTree = "<group>"; };
+		D10000000000000000000004 /* Models */ = {isa = PBXGroup; children = (A10000000000000000000002); path = Models; sourceTree = "<group>"; };
+		D10000000000000000000005 /* Services */ = {isa = PBXGroup; children = (A10000000000000000000003, A10000000000000000000004, A10000000000000000000010); path = Services; sourceTree = "<group>"; };
+		D10000000000000000000006 /* ViewModels */ = {isa = PBXGroup; children = (A10000000000000000000005, A10000000000000000000006); path = ViewModels; sourceTree = "<group>"; };
+		D10000000000000000000008 /* Views */ = {isa = PBXGroup; children = (A10000000000000000000007, A10000000000000000000008, A10000000000000000000009, A1000000000000000000000A, A1000000000000000000000B, A1000000000000000000000C, A1000000000000000000000D, A1000000000000000000000E, A10000000000000000000011, A10000000000000000000012, A10000000000000000000013); path = Views; sourceTree = "<group>"; };
+		D10000000000000000000009 /* Resources */ = {isa = PBXGroup; children = (A10000000000000000000017); path = Resources; sourceTree = "<group>"; };
+		D10000000000000000000007 /* Products */ = {isa = PBXGroup; children = (A1000000000000000000000F); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E10000000000000000000001 /* AlbertLM Dashboard */ = {isa = PBXNativeTarget; buildConfigurationList = F10000000000000000000002; buildPhases = (C10000000000000000000002, C10000000000000000000001, C10000000000000000000003); buildRules = (); dependencies = (); name = "AlbertLM Dashboard"; productName = AlbertLMDashboard; productReference = A1000000000000000000000F; productType = "com.apple.product-type.application"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E10000000000000000000002 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2650; LastUpgradeCheck = 2650; TargetAttributes = {E10000000000000000000001 = {CreatedOnToolsVersion = 26.5; };};}; buildConfigurationList = F10000000000000000000001; compatibilityVersion = "Xcode 15.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, "zh-Hans", Base); mainGroup = D10000000000000000000001; productRefGroup = D10000000000000000000007; projectDirPath = ""; projectRoot = ""; targets = (E10000000000000000000001); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C10000000000000000000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B10000000000000000000013, B10000000000000000000014); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C10000000000000000000002 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B10000000000000000000001, B10000000000000000000002, B10000000000000000000003, B10000000000000000000004, B10000000000000000000005, B10000000000000000000006, B10000000000000000000007, B10000000000000000000008, B10000000000000000000009, B1000000000000000000000A, B1000000000000000000000B, B1000000000000000000000C, B1000000000000000000000D, B1000000000000000000000E, B1000000000000000000000F, B10000000000000000000010, B10000000000000000000011, B10000000000000000000012); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A10000000000000000000017 /* Localizable.strings */ = {isa = PBXVariantGroup; children = (A10000000000000000000015, A10000000000000000000016); name = Localizable.strings; sourceTree = "<group>"; };
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		110000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_TESTABILITY = YES; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_OPTIMIZATION_LEVEL = 0; GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)"); MACOSX_DEPLOYMENT_TARGET = 14.0; ONLY_ACTIVE_ARCH = YES; SDKROOT = macosx; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; name = Debug; };
+		110000000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = YES; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; GCC_C_LANGUAGE_STANDARD = gnu17; MACOSX_DEPLOYMENT_TARGET = 14.0; SDKROOT = macosx; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_OPTIMIZATION_LEVEL = "-O"; }; name = Release; };
+		110000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; COMBINE_HIDPI_IMAGES = YES; CURRENT_PROJECT_VERSION = 3; ENABLE_APP_SANDBOX = NO; ENABLE_HARDENED_RUNTIME = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "AlbertLM Dashboard"; INFOPLIST_KEY_CFBundleIconName = AppIcon; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools"; MARKETING_VERSION = 1.2; PRODUCT_BUNDLE_IDENTIFIER = com.albertyang.AlbertLMDashboard; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; }; name = Debug; };
+		110000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; COMBINE_HIDPI_IMAGES = YES; CURRENT_PROJECT_VERSION = 3; ENABLE_APP_SANDBOX = NO; ENABLE_HARDENED_RUNTIME = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "AlbertLM Dashboard"; INFOPLIST_KEY_CFBundleIconName = AppIcon; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools"; MARKETING_VERSION = 1.2; PRODUCT_BUNDLE_IDENTIFIER = com.albertyang.AlbertLMDashboard; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F10000000000000000000001 /* Build configuration list for PBXProject */ = {isa = XCConfigurationList; buildConfigurations = (110000000000000000000001, 110000000000000000000002); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		F10000000000000000000002 /* Build configuration list for PBXNativeTarget */ = {isa = XCConfigurationList; buildConfigurations = (110000000000000000000003, 110000000000000000000004); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = E10000000000000000000002;
+}

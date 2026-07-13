@@ -1,0 +1,125 @@
+"Dashboard" = "仪表盘";
+"Training" = "训练";
+"GPU" = "GPU";
+"Logs" = "日志";
+"Checkpoints" = "检查点";
+"Teachers" = "AI 教师";
+"Experiments" = "实验";
+"Datasets" = "数据集";
+"Settings" = "设置";
+
+"Refresh" = "刷新";
+"Refresh All" = "全部刷新";
+"Refresh Status" = "刷新状态";
+"Refresh System" = "刷新系统信息";
+"Start" = "启动";
+"Stop" = "停止";
+"Start Training" = "开始训练";
+"Stop Training" = "停止训练";
+"Generate Dataset" = "生成数据集";
+"View Logs" = "查看日志";
+"Save" = "保存";
+"Save & Test Connection" = "保存并测试连接";
+"Generate" = "生成";
+"Cancel" = "取消";
+"OK" = "好";
+
+"Online" = "在线";
+"Offline" = "离线";
+"Running" = "运行中";
+"Stopped" = "已停止";
+"Ready" = "就绪";
+"Error" = "错误";
+"Connecting…" = "正在连接…";
+"Unknown" = "未知";
+"Connected" = "已连接";
+"Training (Status)" = "训练中";
+
+"Server" = "服务器";
+"CPU" = "CPU";
+"Memory" = "内存";
+"Disk" = "磁盘";
+"Training Status" = "训练状态";
+"Checkpoint" = "检查点";
+"Teacher" = "AI 教师";
+"System" = "系统";
+
+"AlbertLM Dashboard" = "AlbertLM 仪表盘";
+"Ludan No. 2 · Remote AI Training Node" = "卤蛋二号 · 远程 AI 训练节点";
+"Remote AI Training Node" = "远程 AI 训练节点";
+"SSH Host" = "SSH 主机";
+"Last connection" = "最近连接";
+"Never" = "从未连接";
+"No GPU Data" = "暂无 GPU 数据";
+"Refresh the remote node." = "请刷新远程节点。";
+"Utilization" = "利用率";
+"Temperature" = "温度";
+"Loss" = "损失值";
+"Updated" = "更新时间";
+"Step" = "步数";
+"CPU load" = "CPU 负载";
+"RAM used" = "已用内存";
+"RAM total" = "总内存";
+"Disk used" = "磁盘使用";
+
+"Control the AlbertLM training session through the remote node controller." = "通过远程节点控制器管理 AlbertLM 训练会话。";
+"Current Status" = "当前状态";
+"Controller Response" = "控制器响应";
+"Status" = "状态";
+
+"Accelerator telemetry reported by albertlmctl gpu." = "由 albertlmctl gpu 返回的加速器遥测数据。";
+"Connect to the remote node to load telemetry." = "连接远程节点以加载遥测数据。";
+"GPU utilization" = "GPU 利用率";
+"Power" = "功耗";
+"VRAM" = "显存";
+
+"Live tmux output exposed by the remote node controller." = "远程节点控制器提供的实时训练输出。";
+"Run View Logs to request `albertlmctl.sh tmux`." = "点击“查看日志”请求 `albertlmctl.sh tmux` 输出。";
+
+"Checkpoint files reported by albertlmctl checkpoints." = "由 albertlmctl checkpoints 返回的检查点文件。";
+"No Checkpoints" = "暂无检查点";
+"The controller returned no checkpoint files." = "控制器没有返回检查点文件。";
+"Date" = "日期";
+"Size" = "大小";
+
+"AI Teachers" = "AI 教师";
+"Manage inference teachers through teacherctl.sh." = "通过 teacherctl.sh 管理推理教师。";
+"Port" = "端口";
+"GPU usage" = "GPU 使用";
+"Last update" = "最近更新";
+"Use %@ through datagen.sh." = "通过 datagen.sh 使用 %@。";
+"Input" = "输入";
+"Output" = "输出";
+"Input file or dataset path" = "输入文件或数据集路径";
+"Output dataset path" = "输出数据集路径";
+
+"Manage the current AlbertLM training experiment." = "管理当前 AlbertLM 训练实验。";
+"Current Experiment" = "当前实验";
+"Model" = "模型";
+"Dataset" = "数据集";
+"Training status" = "训练状态";
+"Current step" = "当前步数";
+
+"Files reported from ~/AlbertLM/datasets by albertlmctl." = "albertlmctl 返回的 ~/AlbertLM/datasets 文件。";
+"File Name" = "文件名";
+"Last Updated" = "更新时间";
+"No Datasets" = "暂无数据集";
+"The controller returned no dataset files." = "控制器没有返回数据集文件。";
+
+"Remote Training Node" = "远程训练节点";
+"SSH host" = "SSH 主机";
+"Username (optional)" = "用户名（可选）";
+"Project path" = "项目路径";
+"Teacher project path" = "Teacher 项目路径";
+"SSH uses /usr/bin/ssh with your system SSH config, existing keys and ssh-agent. Password authentication prompts are disabled." = "SSH 使用系统 /usr/bin/ssh、现有 SSH 配置、密钥和 ssh-agent；密码认证提示已禁用。";
+"Controller:" = "控制器：";
+"Teachers:" = "AI 教师：";
+"Language" = "语言";
+"System Default" = "跟随系统";
+"English" = "English";
+"Simplified Chinese" = "简体中文";
+"Language changes are saved and remain active after reopening the app." = "语言选择会保存，并在重新打开 App 后继续生效。";
+"Remote Node Error" = "远程节点错误";
+"Unknown error" = "未知错误";
+"Refresh remote node status" = "刷新远程节点状态";
+"Refresh %@" = "刷新 %@";

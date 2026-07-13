@@ -1,0 +1,125 @@
+"Dashboard" = "Dashboard";
+"Training" = "Training";
+"GPU" = "GPU";
+"Logs" = "Logs";
+"Checkpoints" = "Checkpoints";
+"Teachers" = "Teachers";
+"Experiments" = "Experiments";
+"Datasets" = "Datasets";
+"Settings" = "Settings";
+
+"Refresh" = "Refresh";
+"Refresh All" = "Refresh All";
+"Refresh Status" = "Refresh Status";
+"Refresh System" = "Refresh System";
+"Start" = "Start";
+"Stop" = "Stop";
+"Start Training" = "Start Training";
+"Stop Training" = "Stop Training";
+"Generate Dataset" = "Generate Dataset";
+"View Logs" = "View Logs";
+"Save" = "Save";
+"Save & Test Connection" = "Save & Test Connection";
+"Generate" = "Generate";
+"Cancel" = "Cancel";
+"OK" = "OK";
+
+"Online" = "Online";
+"Offline" = "Offline";
+"Running" = "Running";
+"Stopped" = "Stopped";
+"Ready" = "Ready";
+"Error" = "Error";
+"Connecting…" = "Connecting…";
+"Unknown" = "Unknown";
+"Connected" = "Connected";
+"Training (Status)" = "Training";
+
+"Server" = "Server";
+"CPU" = "CPU";
+"Memory" = "Memory";
+"Disk" = "Disk";
+"Training Status" = "Training Status";
+"Checkpoint" = "Checkpoint";
+"Teacher" = "Teacher";
+"System" = "System";
+
+"AlbertLM Dashboard" = "AlbertLM Dashboard";
+"Ludan No. 2 · Remote AI Training Node" = "Ludan No. 2 · Remote AI Training Node";
+"Remote AI Training Node" = "Remote AI Training Node";
+"SSH Host" = "SSH Host";
+"Last connection" = "Last connection";
+"Never" = "Never";
+"No GPU Data" = "No GPU Data";
+"Refresh the remote node." = "Refresh the remote node.";
+"Utilization" = "Utilization";
+"Temperature" = "Temperature";
+"Loss" = "Loss";
+"Updated" = "Updated";
+"Step" = "Step";
+"CPU load" = "CPU load";
+"RAM used" = "RAM used";
+"RAM total" = "RAM total";
+"Disk used" = "Disk used";
+
+"Control the AlbertLM training session through the remote node controller." = "Control the AlbertLM training session through the remote node controller.";
+"Current Status" = "Current Status";
+"Controller Response" = "Controller Response";
+"Status" = "Status";
+
+"Accelerator telemetry reported by albertlmctl gpu." = "Accelerator telemetry reported by albertlmctl gpu.";
+"Connect to the remote node to load telemetry." = "Connect to the remote node to load telemetry.";
+"GPU utilization" = "GPU utilization";
+"Power" = "Power";
+"VRAM" = "VRAM";
+
+"Live tmux output exposed by the remote node controller." = "Live tmux output exposed by the remote node controller.";
+"Run View Logs to request `albertlmctl.sh tmux`." = "Run View Logs to request `albertlmctl.sh tmux`.";
+
+"Checkpoint files reported by albertlmctl checkpoints." = "Checkpoint files reported by albertlmctl checkpoints.";
+"No Checkpoints" = "No Checkpoints";
+"The controller returned no checkpoint files." = "The controller returned no checkpoint files.";
+"Date" = "Date";
+"Size" = "Size";
+
+"AI Teachers" = "AI Teachers";
+"Manage inference teachers through teacherctl.sh." = "Manage inference teachers through teacherctl.sh.";
+"Port" = "Port";
+"GPU usage" = "GPU usage";
+"Last update" = "Last update";
+"Use %@ through datagen.sh." = "Use %@ through datagen.sh.";
+"Input" = "Input";
+"Output" = "Output";
+"Input file or dataset path" = "Input file or dataset path";
+"Output dataset path" = "Output dataset path";
+
+"Manage the current AlbertLM training experiment." = "Manage the current AlbertLM training experiment.";
+"Current Experiment" = "Current Experiment";
+"Model" = "Model";
+"Dataset" = "Dataset";
+"Training status" = "Training status";
+"Current step" = "Current step";
+
+"Files reported from ~/AlbertLM/datasets by albertlmctl." = "Files reported from ~/AlbertLM/datasets by albertlmctl.";
+"File Name" = "File Name";
+"Last Updated" = "Last Updated";
+"No Datasets" = "No Datasets";
+"The controller returned no dataset files." = "The controller returned no dataset files.";
+
+"Remote Training Node" = "Remote Training Node";
+"SSH host" = "SSH host";
+"Username (optional)" = "Username (optional)";
+"Project path" = "Project path";
+"Teacher project path" = "Teacher project path";
+"SSH uses /usr/bin/ssh with your system SSH config, existing keys and ssh-agent. Password authentication prompts are disabled." = "SSH uses /usr/bin/ssh with your system SSH config, existing keys and ssh-agent. Password authentication prompts are disabled.";
+"Controller:" = "Controller:";
+"Teachers:" = "Teachers:";
+"Language" = "Language";
+"System Default" = "System Default";
+"English" = "English";
+"Simplified Chinese" = "简体中文";
+"Language changes are saved and remain active after reopening the app." = "Language changes are saved and remain active after reopening the app.";
+"Remote Node Error" = "Remote Node Error";
+"Unknown error" = "Unknown error";
+"Refresh remote node status" = "Refresh remote node status";
+"Refresh %@" = "Refresh %@";
