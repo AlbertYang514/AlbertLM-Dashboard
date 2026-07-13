@@ -9,6 +9,9 @@ enum NodeCommand: String, Sendable {
     case system
     case checkpoints
     case datasets
+    case metrics
+    case systemLog = "system-log"
+    case logs
 }
 
 enum NodeServiceError: LocalizedError {
@@ -18,6 +21,9 @@ enum NodeServiceError: LocalizedError {
     case invalidCheckpoints(String)
     case invalidExperiment(String)
     case invalidDatasets(String)
+    case invalidHardwareStatus(String)
+    case invalidMetrics(String)
+    case invalidSystemHistory(String)
 
     var errorDescription: String? {
         switch self {
@@ -27,6 +33,9 @@ enum NodeServiceError: LocalizedError {
         case .invalidCheckpoints(let detail): "Invalid checkpoints JSON returned by albertlmctl: \(detail)"
         case .invalidExperiment(let detail): "Invalid experiment JSON returned by albertlmctl: \(detail)"
         case .invalidDatasets(let detail): "Invalid datasets JSON returned by albertlmctl: \(detail)"
+        case .invalidHardwareStatus(let detail): "Invalid JSON returned by system_status.sh: \(detail)"
+        case .invalidMetrics(let detail): "Invalid training metrics JSONL returned by albertlmctl: \(detail)"
+        case .invalidSystemHistory(let detail): "Invalid system history JSONL returned by albertlmctl: \(detail)"
         }
     }
 }
@@ -76,14 +85,14 @@ actor AlbertLMNodeService {
 
         let values = dataRows.compactMap { row -> GPUStatus? in
             guard !row.isEmpty else { return nil }
-            // The current controller emits six headerless columns:
-            // name, temperature, utilization, memory used, memory total, power draw.
+            // The current /data controller emits six headerless columns:
+            // name, temperature, power draw, memory used, memory total, utilization.
             // Seven-column output is also accepted for older controller exports.
             let indexes: GPUCSVIndexes
             if hasHeader {
                 indexes = headerIndexes
             } else if row.count == 6 {
-                indexes = GPUCSVIndexes(name: 0, temperature: 1, powerDraw: 5, powerLimit: nil, memoryUsed: 3, memoryTotal: 4, utilization: 2)
+                indexes = GPUCSVIndexes(name: 0, temperature: 1, powerDraw: 2, powerLimit: nil, memoryUsed: 3, memoryTotal: 4, utilization: 5)
             } else {
                 indexes = GPUCSVIndexes(name: 0, temperature: 1, powerDraw: 2, powerLimit: 3, memoryUsed: 4, memoryTotal: 5, utilization: 6)
             }
@@ -108,6 +117,17 @@ actor AlbertLMNodeService {
             return try JSONDecoder().decode(SystemStatus.self, from: data)
         } catch {
             throw NodeServiceError.invalidSystem(error.localizedDescription)
+        }
+    }
+
+    func hardwareStatus() async throws -> WorkstationStatus {
+        let script = shellPath(projectPath) + "/scripts/system_status.sh"
+        let text = try await ssh.run(command: script)
+        guard let data = text.data(using: .utf8) else { throw NodeServiceError.invalidHardwareStatus("Not UTF-8") }
+        do {
+            return try JSONDecoder().decode(WorkstationStatus.self, from: data)
+        } catch {
+            throw NodeServiceError.invalidHardwareStatus(error.localizedDescription)
         }
     }
 
@@ -145,6 +165,40 @@ actor AlbertLMNodeService {
         } catch {
             throw NodeServiceError.invalidDatasets(error.localizedDescription)
         }
+    }
+
+    func trainingMetrics(limit: Int = 500) async throws -> [TrainingMetric] {
+        let text = try await execute(arguments: [NodeCommand.metrics.rawValue, String(clampedLimit(limit))])
+        return try decodeJSONLines(text, as: TrainingMetric.self, error: NodeServiceError.invalidMetrics)
+    }
+
+    func systemHistory(limit: Int = 500) async throws -> [SystemHistorySample] {
+        let text = try await execute(arguments: [NodeCommand.systemLog.rawValue, String(clampedLimit(limit))])
+        return try decodeJSONLines(text, as: SystemHistorySample.self, error: NodeServiceError.invalidSystemHistory)
+    }
+
+    func trainingLog(limit: Int = 500) async throws -> String {
+        try await execute(arguments: [NodeCommand.logs.rawValue, String(clampedLimit(limit))])
+    }
+
+    private func clampedLimit(_ value: Int) -> Int {
+        min(max(value, 1), 5_000)
+    }
+
+    private func decodeJSONLines<T: Decodable>(
+        _ text: String,
+        as type: T.Type,
+        error makeError: (String) -> NodeServiceError
+    ) throws -> [T] {
+        let lines = text.split(whereSeparator: \.isNewline)
+        guard !lines.isEmpty else { return [] }
+        let decoder = JSONDecoder()
+        let values = lines.compactMap { line -> T? in
+            guard let data = String(line).data(using: .utf8) else { return nil }
+            return try? decoder.decode(T.self, from: data)
+        }
+        guard !values.isEmpty else { throw makeError("No valid JSON lines") }
+        return values
     }
 
     private func shellPath(_ path: String) -> String {

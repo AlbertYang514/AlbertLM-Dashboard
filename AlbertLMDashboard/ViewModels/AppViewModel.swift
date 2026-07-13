@@ -8,6 +8,9 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var trainingStatus: TrainingStatus = .empty
     @Published private(set) var gpus: [GPUStatus] = []
     @Published private(set) var systemStatus: SystemStatus = .empty
+    @Published private(set) var workstationStatus: WorkstationStatus = .empty
+    @Published private(set) var trainingMetrics: [TrainingMetric] = []
+    @Published private(set) var hardwareHistory: [SystemHistorySample] = []
     @Published private(set) var checkpoints: [Checkpoint] = []
     @Published private(set) var experimentStatus: ExperimentStatus = .empty
     @Published private(set) var datasets: [DatasetFile] = []
@@ -16,7 +19,8 @@ final class AppViewModel: ObservableObject {
     )
     @Published private(set) var teacherErrors: [TeacherKind: String] = [:]
     @Published private(set) var busyTeachers: Set<TeacherKind> = []
-    @Published private(set) var tmuxOutput = ""
+    @Published private(set) var trainingLogOutput = ""
+    @Published private(set) var controllerResponse = ""
     @Published private(set) var isRefreshing = false
     @Published private(set) var isTrainingActionRunning = false
     @Published private(set) var isGeneratingDataset = false
@@ -55,9 +59,11 @@ final class AppViewModel: ObservableObject {
 
         async let statusResult = capture { try await nodeService.status() }
         async let gpuResult = capture { try await nodeService.gpu() }
-        async let systemResult = capture { try await nodeService.system() }
+        async let systemResult = capture { try await nodeService.hardwareStatus() }
         async let checkpointResult = capture { try await nodeService.checkpoints() }
-        let results = await (statusResult, gpuResult, systemResult, checkpointResult)
+        async let metricsResult = capture { try await nodeService.trainingMetrics() }
+        async let historyResult = capture { try await nodeService.systemHistory() }
+        let results = await (statusResult, gpuResult, systemResult, checkpointResult, metricsResult, historyResult)
 
         switch results.0 {
         case .success(let value):
@@ -76,11 +82,19 @@ final class AppViewModel: ObservableObject {
         case .failure(let error): supplementalErrors.append(error.localizedDescription)
         }
         switch results.2 {
-        case .success(let value): systemStatus = value
+        case .success(let value): workstationStatus = value
         case .failure(let error): supplementalErrors.append(error.localizedDescription)
         }
         switch results.3 {
         case .success(let value): checkpoints = value
+        case .failure(let error): supplementalErrors.append(error.localizedDescription)
+        }
+        switch results.4 {
+        case .success(let value): trainingMetrics = value
+        case .failure(let error): supplementalErrors.append(error.localizedDescription)
+        }
+        switch results.5 {
+        case .success(let value): hardwareHistory = value
         case .failure(let error): supplementalErrors.append(error.localizedDescription)
         }
         if !supplementalErrors.isEmpty {
@@ -94,6 +108,18 @@ final class AppViewModel: ObservableObject {
         }
     }
 
+    func refreshTrainingData() async {
+        async let statusResult = capture { try await nodeService.status() }
+        async let metricsResult = capture { try await nodeService.trainingMetrics() }
+        async let checkpointResult = capture { try await nodeService.checkpoints() }
+        let results = await (statusResult, metricsResult, checkpointResult)
+        applyNodeResults([
+            results.0.map { [self] value in trainingStatus = value },
+            results.1.map { [self] value in trainingMetrics = value },
+            results.2.map { [self] value in checkpoints = value }
+        ])
+    }
+
     func refreshGPU() async {
         await performNodeRead { [self] in
             gpus = try await nodeService.gpu()
@@ -102,8 +128,18 @@ final class AppViewModel: ObservableObject {
 
     func refreshSystem() async {
         await performNodeRead { [self] in
-            systemStatus = try await nodeService.system()
+            workstationStatus = try await nodeService.hardwareStatus()
         }
+    }
+
+    func refreshHardwareData() async {
+        async let statusResult = capture { try await nodeService.hardwareStatus() }
+        async let historyResult = capture { try await nodeService.systemHistory() }
+        let results = await (statusResult, historyResult)
+        applyNodeResults([
+            results.0.map { [self] value in workstationStatus = value },
+            results.1.map { [self] value in hardwareHistory = value }
+        ])
     }
 
     func refreshCheckpoints() async {
@@ -185,9 +221,9 @@ final class AppViewModel: ObservableObject {
         datasetGenerationResponse = ""
     }
 
-    func refreshTmuxOutput() async {
+    func refreshTrainingLog() async {
         await performNodeRead { [self] in
-            tmuxOutput = try await nodeService.execute(.tmux)
+            trainingLogOutput = try await nodeService.trainingLog()
         }
     }
 
@@ -205,11 +241,12 @@ final class AppViewModel: ObservableObject {
         defer { isTrainingActionRunning = false }
         do {
             let response = try await nodeService.execute(command)
-            tmuxOutput = response
+            controllerResponse = response
             connectionState = .online
             lastConnectedAt = Date()
             try? await Task.sleep(for: .milliseconds(500))
             trainingStatus = try await nodeService.status()
+            trainingMetrics = (try? await nodeService.trainingMetrics()) ?? trainingMetrics
             if let status = try? await nodeService.experimentStatus() {
                 experimentStatus = status
             }
@@ -257,6 +294,22 @@ final class AppViewModel: ObservableObject {
     private func capture<T>(_ operation: () async throws -> T) async -> Result<T, Error> {
         do { return .success(try await operation()) }
         catch { return .failure(error) }
+    }
+
+    private func applyNodeResults(_ results: [Result<Void, Error>]) {
+        let errors = results.compactMap { result -> String? in
+            if case .failure(let error) = result { return error.localizedDescription }
+            return nil
+        }
+        if errors.count == results.count {
+            let message = errors.joined(separator: "\n")
+            presentedError = message
+            connectionState = .offline(message)
+        } else {
+            connectionState = .online
+            lastConnectedAt = Date()
+            if !errors.isEmpty { presentedError = errors.joined(separator: "\n") }
+        }
     }
 
     private func performNodeRead(_ operation: () async throws -> Void) async {

@@ -6,6 +6,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
     case teachers = "Teachers"
     case experiments = "Experiments"
     case datasets = "Datasets"
+    case hardware = "Hardware"
     case gpu = "GPU"
     case logs = "Logs"
     case checkpoints = "Checkpoints"
@@ -20,6 +21,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         case .teachers: "person.2.wave.2"
         case .experiments: "flask"
         case .datasets: "cylinder.split.1x2"
+        case .hardware: "gauge.with.dots.needle.67percent"
         case .gpu: "cpu"
         case .logs: "text.alignleft"
         case .checkpoints: "externaldrive"
@@ -105,6 +107,170 @@ struct SystemStatus: Decodable, Equatable {
         case memoryTotal = "memory_total"
         case memoryUsed = "memory_used"
         case diskUsed = "disk_used"
+    }
+}
+
+struct WorkstationStatus: Decodable, Equatable {
+    let cpu: CPUHardwareStatus?
+    let gpu: GPUHardwareStatus?
+    let memory: MemoryHardwareStatus?
+    let disk: DiskHardwareStatus?
+    let system: OperatingSystemStatus?
+
+    static let empty = WorkstationStatus(cpu: nil, gpu: nil, memory: nil, disk: nil, system: nil)
+
+    enum CodingKeys: String, CodingKey { case cpu, gpu, memory, disk, system }
+
+    init(cpu: CPUHardwareStatus?, gpu: GPUHardwareStatus?, memory: MemoryHardwareStatus?, disk: DiskHardwareStatus?, system: OperatingSystemStatus?) {
+        self.cpu = cpu
+        self.gpu = gpu
+        self.memory = memory
+        self.disk = disk
+        self.system = system
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        cpu = try? values.decodeIfPresent(CPUHardwareStatus.self, forKey: .cpu)
+        gpu = try? values.decodeIfPresent(GPUHardwareStatus.self, forKey: .gpu)
+        memory = try? values.decodeIfPresent(MemoryHardwareStatus.self, forKey: .memory)
+        disk = try? values.decodeIfPresent(DiskHardwareStatus.self, forKey: .disk)
+        system = try? values.decodeIfPresent(OperatingSystemStatus.self, forKey: .system)
+    }
+}
+
+struct TrainingMetric: Decodable, Equatable, Identifiable {
+    let step: Int
+    let tokensSeen: Int64
+    let trainLoss: Double
+    let learningRate: Double
+    let gradNorm: Double?
+    let tokensPerSecond: Double
+    let timestamp: String
+
+    var id: String { "\(step)|\(timestamp)" }
+
+    enum CodingKeys: String, CodingKey {
+        case step, timestamp
+        case tokensSeen = "tokens_seen"
+        case trainLoss = "train_loss"
+        case learningRate = "learning_rate"
+        case gradNorm = "grad_norm"
+        case tokensPerSecond = "tokens_per_second"
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        step = try values.decodeFlexibleInt(forKey: .step) ?? 0
+        tokensSeen = try values.decodeFlexibleInt64(forKey: .tokensSeen) ?? 0
+        trainLoss = try values.decodeFlexibleDouble(forKey: .trainLoss) ?? 0
+        learningRate = try values.decodeFlexibleDouble(forKey: .learningRate) ?? 0
+        gradNorm = try values.decodeFlexibleDouble(forKey: .gradNorm)
+        tokensPerSecond = try values.decodeFlexibleDouble(forKey: .tokensPerSecond) ?? 0
+        timestamp = try values.decodeIfPresent(String.self, forKey: .timestamp) ?? ""
+    }
+}
+
+struct SystemHistorySample: Decodable, Equatable, Identifiable {
+    let timestamp: String
+    let snapshot: WorkstationStatus
+
+    var id: String { timestamp }
+
+    enum CodingKeys: String, CodingKey { case timestamp }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        timestamp = try values.decodeIfPresent(String.self, forKey: .timestamp) ?? ""
+        snapshot = try WorkstationStatus(from: decoder)
+    }
+}
+
+struct CPUHardwareStatus: Decodable, Equatable {
+    let model: String?
+    let cores: String?
+    let threads: String?
+    let frequency: String?
+    let usage: String?
+    let perCore: [CPUCoreUsage]?
+    let temperature: String?
+
+    enum CodingKeys: String, CodingKey {
+        case model, cores, threads, frequency, usage, temperature
+        case perCore = "per_core"
+    }
+}
+
+struct CPUCoreUsage: Decodable, Equatable, Identifiable {
+    let core: String
+    let usage: String
+    var id: String { core }
+}
+
+struct GPUHardwareStatus: Decodable, Equatable {
+    let model: String?
+    let memoryUsed: String?
+    let memoryTotal: String?
+    let utilization: String?
+    let temperature: String?
+    let power: String?
+
+    enum CodingKeys: String, CodingKey {
+        case model, utilization, temperature, power
+        case memoryUsed = "memory_used"
+        case memoryTotal = "memory_total"
+    }
+}
+
+struct MemoryHardwareStatus: Decodable, Equatable {
+    let total: String?
+    let used: String?
+    let available: String?
+    let usage: String?
+    let swap: SwapHardwareStatus?
+}
+
+struct SwapHardwareStatus: Decodable, Equatable {
+    let total: String?
+    let used: String?
+    let remaining: String?
+}
+
+struct DiskHardwareStatus: Decodable, Equatable {
+    let system: DiskVolumeStatus?
+    let data: DiskVolumeStatus?
+    let ssdTemperatures: [SSDTemperature]?
+
+    enum CodingKeys: String, CodingKey {
+        case system, data
+        case ssdTemperatures = "ssd_temperatures"
+    }
+}
+
+struct DiskVolumeStatus: Decodable, Equatable {
+    let mount: String?
+    let total: String?
+    let used: String?
+    let available: String?
+    let usage: String?
+}
+
+struct SSDTemperature: Decodable, Equatable, Identifiable {
+    let device: String
+    let temperature: String
+    var id: String { device }
+}
+
+struct OperatingSystemStatus: Decodable, Equatable {
+    let ubuntu: String?
+    let kernel: String?
+    let cuda: String?
+    let nvidiaDriver: String?
+    let uptime: String?
+
+    enum CodingKeys: String, CodingKey {
+        case ubuntu, kernel, cuda, uptime
+        case nvidiaDriver = "nvidia_driver"
     }
 }
 
@@ -252,8 +418,9 @@ struct TeacherStatus: Decodable, Identifiable, Equatable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        let remoteName = values.decodeLossyString(forKey: .name)
         let kindValue = try values.decodeIfPresent(String.self, forKey: .teacher)
-            ?? values.decodeLossyString(forKey: .name)
+            ?? remoteName
             ?? "qwen"
         kind = TeacherKind(rawValue: kindValue.lowercased().replacingOccurrences(of: "-", with: "")) ?? .qwen
         let remoteState = try values.decodeIfPresent(String.self, forKey: .status)
@@ -262,6 +429,7 @@ struct TeacherStatus: Decodable, Identifiable, Equatable {
         state = TeacherRunState(remoteValue: remoteState)
         modelName = try values.decodeIfPresent(String.self, forKey: .modelName)
             ?? values.decodeLossyString(forKey: .model)
+            ?? remoteName
             ?? kind.displayName
         port = values.decodeLossyString(forKey: .port) ?? "—"
         gpuUsage = try values.decodeIfPresent(String.self, forKey: .gpuUsage)
@@ -288,6 +456,13 @@ private extension KeyedDecodingContainer {
         if let value = try? decodeIfPresent(Int.self, forKey: key) { return value }
         if let value = try? decodeIfPresent(Double.self, forKey: key) { return Int(value) }
         if let value = try? decodeIfPresent(String.self, forKey: key) { return Int(value) }
+        return nil
+    }
+
+    func decodeFlexibleInt64(forKey key: Key) throws -> Int64? {
+        if let value = try? decodeIfPresent(Int64.self, forKey: key) { return value }
+        if let value = try? decodeIfPresent(Double.self, forKey: key) { return Int64(value) }
+        if let value = try? decodeIfPresent(String.self, forKey: key) { return Int64(value) }
         return nil
     }
 

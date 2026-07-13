@@ -7,6 +7,7 @@
 "Experiments" = "实验";
 "Datasets" = "数据集";
 "Settings" = "设置";
+"Hardware" = "硬件";
 
 "Refresh" = "刷新";
 "Refresh All" = "全部刷新";
@@ -73,9 +74,6 @@
 "Power" = "功耗";
 "VRAM" = "显存";
 
-"Live tmux output exposed by the remote node controller." = "远程节点控制器提供的实时训练输出。";
-"Run View Logs to request `albertlmctl.sh tmux`." = "点击“查看日志”请求 `albertlmctl.sh tmux` 输出。";
-
 "Checkpoint files reported by albertlmctl checkpoints." = "由 albertlmctl checkpoints 返回的检查点文件。";
 "No Checkpoints" = "暂无检查点";
 "The controller returned no checkpoint files." = "控制器没有返回检查点文件。";
@@ -100,7 +98,7 @@
 "Training status" = "训练状态";
 "Current step" = "当前步数";
 
-"Files reported from ~/AlbertLM/datasets by albertlmctl." = "albertlmctl 返回的 ~/AlbertLM/datasets 文件。";
+"Files reported from /data/AlbertLM/datasets by albertlmctl." = "albertlmctl 返回的 /data/AlbertLM/datasets 文件。";
 "File Name" = "文件名";
 "Last Updated" = "更新时间";
 "No Datasets" = "暂无数据集";
@@ -123,3 +121,45 @@
 "Unknown error" = "未知错误";
 "Refresh remote node status" = "刷新远程节点状态";
 "Refresh %@" = "刷新 %@";
+"N/A" = "不可用";
+"Cores / Threads" = "核心数 / 线程数";
+"Current frequency" = "当前频率";
+"CPU usage" = "CPU 占用率";
+"CPU temperature" = "CPU 温度";
+"Per-core load" = "每核心负载";
+"VRAM used" = "已用显存";
+"VRAM total" = "总显存";
+"GPU temperature" = "GPU 温度";
+"Power draw" = "功耗";
+"Total RAM" = "总内存";
+"Used RAM" = "已用内存";
+"Available RAM" = "可用内存";
+"Memory usage" = "内存使用率";
+"Swap" = "交换空间";
+"Total swap" = "总交换空间";
+"Used swap" = "已用交换空间";
+"Remaining swap" = "剩余交换空间";
+"System disk" = "系统盘";
+"Data disk" = "/data 磁盘";
+"Used / Total" = "已用 / 总量";
+"Available" = "可用";
+"SSD temperatures" = "SSD 温度";
+"Ubuntu" = "Ubuntu";
+"Kernel" = "内核";
+"CUDA" = "CUDA";
+"NVIDIA driver" = "NVIDIA 驱动";
+"Uptime" = "运行时间";
+"Training Metrics" = "训练指标";
+"Loss Curve" = "损失曲线";
+"Learning Rate Curve" = "学习率曲线";
+"Learning Rate" = "学习率";
+"Tokens / second" = "每秒 Token 数";
+"Tokens Seen" = "已训练 Token 数";
+"Recent Checkpoint" = "最近检查点";
+"No Metrics" = "暂无训练指标";
+"Metrics will appear after training starts." = "训练开始后将在此显示结构化指标。";
+"Workstation telemetry collected through the remote controller." = "通过远程控制器采集的工作站硬件遥测。";
+"Last system sample" = "最近系统采样";
+"SSD" = "SSD";
+"Recent training output read from the remote log file." = "读取远程日志文件中的最近训练输出。";
+"Run View Logs to read recent lines from train.log." = "点击“查看日志”读取 train.log 的最近内容。";

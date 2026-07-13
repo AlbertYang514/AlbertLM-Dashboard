@@ -43,9 +43,19 @@ final class SettingsStore: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         host = defaults.string(forKey: Key.host) ?? "ludan2"
         username = defaults.string(forKey: Key.username) ?? ""
-        projectPath = defaults.string(forKey: Key.projectPath) ?? "~/AlbertLM"
-        teacherProjectPath = defaults.string(forKey: Key.teacherProjectPath) ?? "~/AI-Teachers"
+        projectPath = Self.migratedPath(
+            defaults.string(forKey: Key.projectPath),
+            legacyValues: ["~/AlbertLM", "/home/ludan2/AlbertLM"],
+            currentValue: "/data/AlbertLM"
+        )
+        teacherProjectPath = Self.migratedPath(
+            defaults.string(forKey: Key.teacherProjectPath),
+            legacyValues: ["~/AI-Teachers", "/home/ludan2/AI-Teachers"],
+            currentValue: "/data/AI-Teachers"
+        )
         language = AppLanguage(rawValue: defaults.string(forKey: Key.language) ?? "") ?? .system
+        defaults.set(projectPath, forKey: Key.projectPath)
+        defaults.set(teacherProjectPath, forKey: Key.teacherProjectPath)
     }
 
     var sshConfiguration: SSHConfiguration {
@@ -62,5 +72,12 @@ final class SettingsStore: ObservableObject {
         defaults.set(projectPath, forKey: Key.projectPath)
         defaults.set(teacherProjectPath, forKey: Key.teacherProjectPath)
         defaults.set(language.rawValue, forKey: Key.language)
+    }
+
+    private static func migratedPath(_ storedValue: String?, legacyValues: Set<String>, currentValue: String) -> String {
+        guard let storedValue, !storedValue.isEmpty, !legacyValues.contains(storedValue) else {
+            return currentValue
+        }
+        return storedValue
     }
 }

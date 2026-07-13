@@ -23,6 +23,7 @@ struct ContentView: View {
                 case .teachers: TeachersView()
                 case .experiments: ExperimentsView()
                 case .datasets: DatasetsView()
+                case .hardware: HardwareView()
                 case .gpu: GPUView()
                 case .logs: LogsView()
                 case .checkpoints: CheckpointsView()

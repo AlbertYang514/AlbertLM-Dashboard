@@ -10,8 +10,8 @@ struct SettingsView: View {
             Section("Remote Training Node") {
                 TextField("SSH host", text: $settings.host, prompt: Text("ludan2"))
                 TextField("Username (optional)", text: $settings.username)
-                TextField("Project path", text: $settings.projectPath, prompt: Text("~/AlbertLM"))
-                TextField("Teacher project path", text: $settings.teacherProjectPath, prompt: Text("~/AI-Teachers"))
+                TextField("Project path", text: $settings.projectPath, prompt: Text("/data/AlbertLM"))
+                TextField("Teacher project path", text: $settings.teacherProjectPath, prompt: Text("/data/AI-Teachers"))
             }
 
             Section("Language") {

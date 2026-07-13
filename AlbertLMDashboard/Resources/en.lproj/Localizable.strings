@@ -7,6 +7,7 @@
 "Experiments" = "Experiments";
 "Datasets" = "Datasets";
 "Settings" = "Settings";
+"Hardware" = "Hardware";
 
 "Refresh" = "Refresh";
 "Refresh All" = "Refresh All";
@@ -73,9 +74,6 @@
 "Power" = "Power";
 "VRAM" = "VRAM";
 
-"Live tmux output exposed by the remote node controller." = "Live tmux output exposed by the remote node controller.";
-"Run View Logs to request `albertlmctl.sh tmux`." = "Run View Logs to request `albertlmctl.sh tmux`.";
-
 "Checkpoint files reported by albertlmctl checkpoints." = "Checkpoint files reported by albertlmctl checkpoints.";
 "No Checkpoints" = "No Checkpoints";
 "The controller returned no checkpoint files." = "The controller returned no checkpoint files.";
@@ -100,7 +98,7 @@
 "Training status" = "Training status";
 "Current step" = "Current step";
 
-"Files reported from ~/AlbertLM/datasets by albertlmctl." = "Files reported from ~/AlbertLM/datasets by albertlmctl.";
+"Files reported from /data/AlbertLM/datasets by albertlmctl." = "Files reported from /data/AlbertLM/datasets by albertlmctl.";
 "File Name" = "File Name";
 "Last Updated" = "Last Updated";
 "No Datasets" = "No Datasets";
@@ -123,3 +121,45 @@
 "Unknown error" = "Unknown error";
 "Refresh remote node status" = "Refresh remote node status";
 "Refresh %@" = "Refresh %@";
+"N/A" = "N/A";
+"Cores / Threads" = "Cores / Threads";
+"Current frequency" = "Current frequency";
+"CPU usage" = "CPU usage";
+"CPU temperature" = "CPU temperature";
+"Per-core load" = "Per-core load";
+"VRAM used" = "VRAM used";
+"VRAM total" = "VRAM total";
+"GPU temperature" = "GPU temperature";
+"Power draw" = "Power draw";
+"Total RAM" = "Total RAM";
+"Used RAM" = "Used RAM";
+"Available RAM" = "Available RAM";
+"Memory usage" = "Memory usage";
+"Swap" = "Swap";
+"Total swap" = "Total swap";
+"Used swap" = "Used swap";
+"Remaining swap" = "Remaining swap";
+"System disk" = "System disk";
+"Data disk" = "Data disk";
+"Used / Total" = "Used / Total";
+"Available" = "Available";
+"SSD temperatures" = "SSD temperatures";
+"Ubuntu" = "Ubuntu";
+"Kernel" = "Kernel";
+"CUDA" = "CUDA";
+"NVIDIA driver" = "NVIDIA driver";
+"Uptime" = "Uptime";
+"Training Metrics" = "Training Metrics";
+"Loss Curve" = "Loss Curve";
+"Learning Rate Curve" = "Learning Rate Curve";
+"Learning Rate" = "Learning Rate";
+"Tokens / second" = "Tokens / second";
+"Tokens Seen" = "Tokens Seen";
+"Recent Checkpoint" = "Recent Checkpoint";
+"No Metrics" = "No Metrics";
+"Metrics will appear after training starts." = "Metrics will appear after training starts.";
+"Workstation telemetry collected through the remote controller." = "Workstation telemetry collected through the remote controller.";
+"Last system sample" = "Last system sample";
+"SSD" = "SSD";
+"Recent training output read from the remote log file." = "Recent training output read from the remote log file.";
+"Run View Logs to read recent lines from train.log." = "Run View Logs to read recent lines from train.log.";

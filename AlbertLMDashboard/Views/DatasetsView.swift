@@ -6,7 +6,7 @@ struct DatasetsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
             HStack(alignment: .bottom) {
-                PageHeader(title: "Datasets", subtitle: "Files reported from ~/AlbertLM/datasets by albertlmctl.")
+                PageHeader(title: "Datasets", subtitle: "Files reported from /data/AlbertLM/datasets by albertlmctl.")
                 Button {
                     Task { await appModel.refreshDatasets() }
                 } label: {

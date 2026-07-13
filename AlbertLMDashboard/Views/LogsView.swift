@@ -6,9 +6,9 @@ struct LogsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .bottom) {
-                PageHeader(title: "Logs", subtitle: "Live tmux output exposed by the remote node controller.")
+                PageHeader(title: "Logs", subtitle: "Recent training output read from the remote log file.")
                 Button {
-                    Task { await appModel.refreshTmuxOutput() }
+                    Task { await appModel.refreshTrainingLog() }
                 } label: {
                     Label("View Logs", systemImage: "arrow.clockwise")
                 }
@@ -16,11 +16,11 @@ struct LogsView: View {
 
             ScrollView([.vertical, .horizontal]) {
                 Group {
-                    if appModel.tmuxOutput.isEmpty {
-                        Text("Run View Logs to request `albertlmctl.sh tmux`.")
+                    if appModel.trainingLogOutput.isEmpty {
+                        Text("Run View Logs to read recent lines from train.log.")
                             .foregroundStyle(.secondary)
                     } else {
-                        Text(appModel.tmuxOutput)
+                        Text(appModel.trainingLogOutput)
                     }
                 }
                 .font(.system(size: 12, design: .monospaced))
