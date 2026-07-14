@@ -96,3 +96,38 @@ extension TrainingStatus {
         }
     }
 }
+
+func compactCount(_ value: Int64?) -> String {
+    guard let value else { return "—" }
+    let magnitude = Double(value)
+    if abs(magnitude) >= 1_000_000_000 {
+        return String(format: "%.2fB", magnitude / 1_000_000_000)
+    }
+    if abs(magnitude) >= 1_000_000 {
+        return String(format: "%.1fM", magnitude / 1_000_000)
+    }
+    if abs(magnitude) >= 1_000 {
+        return String(format: "%.1fK", magnitude / 1_000)
+    }
+    return value.formatted()
+}
+
+func binaryByteCount(_ value: Int64?) -> String {
+    guard let value else { return "—" }
+    let bytes = Double(value)
+    if bytes >= 1_073_741_824 {
+        return String(format: "%.2f GiB", bytes / 1_073_741_824)
+    }
+    if bytes >= 1_048_576 {
+        return String(format: "%.2f MiB", bytes / 1_048_576)
+    }
+    if bytes >= 1_024 {
+        return String(format: "%.2f KiB", bytes / 1_024)
+    }
+    return "\(value) B"
+}
+
+func finiteDecimal(_ value: Double?, places: Int = 3) -> String {
+    guard let value, value.isFinite else { return "—" }
+    return String(format: "%.*f", places, value)
+}

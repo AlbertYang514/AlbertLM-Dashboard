@@ -10,8 +10,14 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var systemStatus: SystemStatus = .empty
     @Published private(set) var workstationStatus: WorkstationStatus = .empty
     @Published private(set) var trainingMetrics: [TrainingMetric] = []
+    @Published private(set) var latestEvaluation: EvaluationLatest?
+    @Published private(set) var evaluationMetrics: [EvaluationMetric] = []
+    @Published private(set) var generatedSampleBatches: [GeneratedSampleBatch] = []
     @Published private(set) var hardwareHistory: [SystemHistorySample] = []
-    @Published private(set) var checkpoints: [Checkpoint] = []
+    @Published private(set) var checkpointIndex: CheckpointIndex = .empty
+    @Published private(set) var checkpointLoadError: String?
+    @Published private(set) var evaluationLoadError: String?
+    @Published private(set) var samplesLoadError: String?
     @Published private(set) var experimentStatus: ExperimentStatus = .empty
     @Published private(set) var datasets: [DatasetFile] = []
     @Published private(set) var teacherStatuses: [TeacherKind: TeacherStatus] = Dictionary(
@@ -22,6 +28,7 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var trainingLogOutput = ""
     @Published private(set) var controllerResponse = ""
     @Published private(set) var isRefreshing = false
+    @Published private(set) var isTrainingRefreshing = false
     @Published private(set) var isTrainingActionRunning = false
     @Published private(set) var isGeneratingDataset = false
     @Published private(set) var datasetGenerationResponse = ""
@@ -61,9 +68,7 @@ final class AppViewModel: ObservableObject {
         async let gpuResult = capture { try await nodeService.gpu() }
         async let systemResult = capture { try await nodeService.hardwareStatus() }
         async let checkpointResult = capture { try await nodeService.checkpoints() }
-        async let metricsResult = capture { try await nodeService.trainingMetrics() }
-        async let historyResult = capture { try await nodeService.systemHistory() }
-        let results = await (statusResult, gpuResult, systemResult, checkpointResult, metricsResult, historyResult)
+        let results = await (statusResult, gpuResult, systemResult, checkpointResult)
 
         switch results.0 {
         case .success(let value):
@@ -86,16 +91,9 @@ final class AppViewModel: ObservableObject {
         case .failure(let error): supplementalErrors.append(error.localizedDescription)
         }
         switch results.3 {
-        case .success(let value): checkpoints = value
-        case .failure(let error): supplementalErrors.append(error.localizedDescription)
-        }
-        switch results.4 {
-        case .success(let value): trainingMetrics = value
-        case .failure(let error): supplementalErrors.append(error.localizedDescription)
-        }
-        switch results.5 {
-        case .success(let value): hardwareHistory = value
-        case .failure(let error): supplementalErrors.append(error.localizedDescription)
+        case .success(let value): applyCheckpointIndex(value)
+        case .failure:
+            checkpointLoadError = "Checkpoint index could not be loaded."
         }
         if !supplementalErrors.isEmpty {
             presentedError = supplementalErrors.joined(separator: "\n")
@@ -109,15 +107,46 @@ final class AppViewModel: ObservableObject {
     }
 
     func refreshTrainingData() async {
+        guard !isTrainingRefreshing else { return }
+        isTrainingRefreshing = true
+        defer { isTrainingRefreshing = false }
+
         async let statusResult = capture { try await nodeService.status() }
         async let metricsResult = capture { try await nodeService.trainingMetrics() }
         async let checkpointResult = capture { try await nodeService.checkpoints() }
-        let results = await (statusResult, metricsResult, checkpointResult)
+        async let evaluationLatestResult = capture { try await nodeService.evaluationLatest() }
+        async let evaluationMetricsResult = capture { try await nodeService.evaluationMetrics() }
+        async let samplesResult = capture { try await nodeService.generatedSamples() }
+        let results = await (statusResult, metricsResult, checkpointResult, evaluationLatestResult, evaluationMetricsResult, samplesResult)
         applyNodeResults([
             results.0.map { [self] value in trainingStatus = value },
-            results.1.map { [self] value in trainingMetrics = value },
-            results.2.map { [self] value in checkpoints = value }
+            results.1.map { [self] value in trainingMetrics = value }
         ])
+        switch results.2 {
+        case .success(let value): applyCheckpointIndex(value)
+        case .failure: checkpointLoadError = "Checkpoint index could not be loaded."
+        }
+        switch results.3 {
+        case .success(let value):
+            if let value { latestEvaluation = value }
+            evaluationLoadError = nil
+        case .failure:
+            evaluationLoadError = "Evaluation data could not be loaded."
+        }
+        switch results.4 {
+        case .success(let value):
+            if !value.isEmpty || evaluationMetrics.isEmpty { evaluationMetrics = value }
+            evaluationLoadError = nil
+        case .failure:
+            evaluationLoadError = "Evaluation data could not be loaded."
+        }
+        switch results.5 {
+        case .success(let value):
+            generatedSampleBatches = value
+            samplesLoadError = nil
+        case .failure:
+            samplesLoadError = "Generated samples could not be loaded."
+        }
     }
 
     func refreshGPU() async {
@@ -143,8 +172,12 @@ final class AppViewModel: ObservableObject {
     }
 
     func refreshCheckpoints() async {
-        await performNodeRead { [self] in
-            checkpoints = try await nodeService.checkpoints()
+        do {
+            applyCheckpointIndex(try await nodeService.checkpoints())
+            connectionState = .online
+            lastConnectedAt = Date()
+        } catch {
+            checkpointLoadError = "Checkpoint index could not be loaded."
         }
     }
 
@@ -247,6 +280,9 @@ final class AppViewModel: ObservableObject {
             try? await Task.sleep(for: .milliseconds(500))
             trainingStatus = try await nodeService.status()
             trainingMetrics = (try? await nodeService.trainingMetrics()) ?? trainingMetrics
+            if let latest = try? await nodeService.evaluationLatest() {
+                latestEvaluation = latest
+            }
             if let status = try? await nodeService.experimentStatus() {
                 experimentStatus = status
             }
@@ -289,6 +325,15 @@ final class AppViewModel: ObservableObject {
             )
             teacherErrors[teacher] = error.localizedDescription
         }
+    }
+
+    private func applyCheckpointIndex(_ value: CheckpointIndex?) {
+        guard let value else {
+            checkpointLoadError = "Checkpoint index is unavailable."
+            return
+        }
+        checkpointIndex = value
+        checkpointLoadError = nil
     }
 
     private func capture<T>(_ operation: () async throws -> T) async -> Result<T, Error> {

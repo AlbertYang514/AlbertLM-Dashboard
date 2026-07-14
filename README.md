@@ -13,7 +13,7 @@ The app delegates authentication to the system `/usr/bin/ssh` client. Configure 
 Every remote operation is routed through:
 
 ```text
-/data/AlbertLM/scripts/albertlmctl.sh status|gpu|system|checkpoints|datasets|experiment status|metrics|system-log|logs|start|stop|tmux
+bash /data/AlbertLM/scripts/albertlmctl.sh status|gpu|system|checkpoints|datasets|experiment status|metrics|system-log|logs|start|stop|tmux
 /data/AlbertLM/scripts/system_status.sh
 /data/AI-Teachers/scripts/teacherctl.sh qwen|deepseek|gptoss start|stop|status
 /data/AI-Teachers/scripts/datagen.sh teacher input output

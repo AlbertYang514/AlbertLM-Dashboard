@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 enum NodeCommand: String, Sendable {
     case status
@@ -24,6 +25,9 @@ enum NodeServiceError: LocalizedError {
     case invalidHardwareStatus(String)
     case invalidMetrics(String)
     case invalidSystemHistory(String)
+    case invalidEvaluationLatest(String)
+    case invalidEvaluationMetrics(String)
+    case invalidGeneratedSamples(String)
 
     var errorDescription: String? {
         switch self {
@@ -33,14 +37,18 @@ enum NodeServiceError: LocalizedError {
         case .invalidCheckpoints(let detail): "Invalid checkpoints JSON returned by albertlmctl: \(detail)"
         case .invalidExperiment(let detail): "Invalid experiment JSON returned by albertlmctl: \(detail)"
         case .invalidDatasets(let detail): "Invalid datasets JSON returned by albertlmctl: \(detail)"
-        case .invalidHardwareStatus(let detail): "Invalid JSON returned by system_status.sh: \(detail)"
+        case .invalidHardwareStatus(let detail): "Invalid JSON returned by albertlmctl system: \(detail)"
         case .invalidMetrics(let detail): "Invalid training metrics JSONL returned by albertlmctl: \(detail)"
         case .invalidSystemHistory(let detail): "Invalid system history JSONL returned by albertlmctl: \(detail)"
+        case .invalidEvaluationLatest(let detail): "Invalid eval_latest.json: \(detail)"
+        case .invalidEvaluationMetrics(let detail): "Invalid eval_metrics.jsonl: \(detail)"
+        case .invalidGeneratedSamples(let detail): "Invalid samples.jsonl: \(detail)"
         }
     }
 }
 
 actor AlbertLMNodeService {
+    private static let logger = Logger(subsystem: "com.albertyang.AlbertLMDashboard", category: "NodeService")
     private let ssh: SSHService
     private var projectPath: String
 
@@ -59,7 +67,9 @@ actor AlbertLMNodeService {
 
     private func execute(arguments: [String]) async throws -> String {
         let script = shellPath(projectPath) + "/scripts/albertlmctl.sh"
-        let command = ([script] + arguments.map(shellQuote)).joined(separator: " ")
+        // GUI apps do not inherit the terminal's LC_* variables. Force the
+        // controller's command output to use the stable locale its parsers expect.
+        let command = (["env", "LC_ALL=C", "LANG=C", "bash", script] + arguments.map(shellQuote)).joined(separator: " ")
         return try await ssh.run(command: command)
     }
 
@@ -110,38 +120,61 @@ actor AlbertLMNodeService {
         return values
     }
 
-    func system() async throws -> SystemStatus {
+    func system() async throws -> WorkstationStatus {
         let text = try await execute(.system)
         guard let data = text.data(using: .utf8) else { throw NodeServiceError.invalidSystem("Not UTF-8") }
         do {
-            return try JSONDecoder().decode(SystemStatus.self, from: data)
+            let status = try JSONDecoder().decode(WorkstationStatus.self, from: data)
+            logHardwareDiagnostics(status)
+            return status
         } catch {
+            Self.logger.error("Could not decode albertlmctl system response: \(error.localizedDescription, privacy: .public)")
             throw NodeServiceError.invalidSystem(error.localizedDescription)
         }
     }
 
     func hardwareStatus() async throws -> WorkstationStatus {
-        let script = shellPath(projectPath) + "/scripts/system_status.sh"
-        let text = try await ssh.run(command: script)
-        guard let data = text.data(using: .utf8) else { throw NodeServiceError.invalidHardwareStatus("Not UTF-8") }
-        do {
-            return try JSONDecoder().decode(WorkstationStatus.self, from: data)
-        } catch {
-            throw NodeServiceError.invalidHardwareStatus(error.localizedDescription)
-        }
+        try await system()
     }
 
-    func checkpoints() async throws -> [Checkpoint] {
-        let text = try await execute(.checkpoints)
+    func checkpoints() async throws -> CheckpointIndex? {
+        let text = try await readRemoteFile("logs/checkpoints.json")
+        guard !text.isEmpty else { return nil }
         guard let data = text.data(using: .utf8) else { throw NodeServiceError.invalidCheckpoints("Not UTF-8") }
         do {
-            if let values = try? JSONDecoder().decode([Checkpoint].self, from: data) {
-                return values
-            }
-            return try JSONDecoder().decode(CheckpointEnvelope.self, from: data).checkpoints
+            let index = try JSONDecoder().decode(CheckpointIndex.self, from: data)
+            return CheckpointIndex(
+                schemaVersion: index.schemaVersion,
+                generatedAt: index.generatedAt,
+                latest: index.latest,
+                checkpoints: index.checkpoints.sorted { $0.step > $1.step }
+            )
         } catch {
             throw NodeServiceError.invalidCheckpoints(error.localizedDescription)
         }
+    }
+
+    func evaluationLatest() async throws -> EvaluationLatest? {
+        let text = try await readRemoteFile("logs/eval_latest.json")
+        guard !text.isEmpty else { return nil }
+        guard let data = text.data(using: .utf8) else { throw NodeServiceError.invalidEvaluationLatest("Not UTF-8") }
+        do {
+            return try JSONDecoder().decode(EvaluationLatest.self, from: data)
+        } catch {
+            throw NodeServiceError.invalidEvaluationLatest(error.localizedDescription)
+        }
+    }
+
+    func evaluationMetrics(limit: Int = 2_000) async throws -> [EvaluationMetric] {
+        let text = try await readRemoteFile("logs/eval_metrics.jsonl", tailLimit: limit)
+        return try decodeJSONLines(text, as: EvaluationMetric.self, error: NodeServiceError.invalidEvaluationMetrics)
+            .sorted { $0.optimizerStep < $1.optimizerStep }
+    }
+
+    func generatedSamples(limit: Int = 2_000) async throws -> [GeneratedSampleBatch] {
+        let text = try await readRemoteFile("logs/samples.jsonl", tailLimit: limit)
+        return try decodeJSONLines(text, as: GeneratedSampleBatch.self, error: NodeServiceError.invalidGeneratedSamples)
+            .sorted { $0.optimizerStep > $1.optimizerStep }
     }
 
     func experimentStatus() async throws -> ExperimentStatus {
@@ -172,7 +205,7 @@ actor AlbertLMNodeService {
         return try decodeJSONLines(text, as: TrainingMetric.self, error: NodeServiceError.invalidMetrics)
     }
 
-    func systemHistory(limit: Int = 500) async throws -> [SystemHistorySample] {
+    func systemHistory(limit: Int = 120) async throws -> [SystemHistorySample] {
         let text = try await execute(arguments: [NodeCommand.systemLog.rawValue, String(clampedLimit(limit))])
         return try decodeJSONLines(text, as: SystemHistorySample.self, error: NodeServiceError.invalidSystemHistory)
     }
@@ -193,12 +226,63 @@ actor AlbertLMNodeService {
         let lines = text.split(whereSeparator: \.isNewline)
         guard !lines.isEmpty else { return [] }
         let decoder = JSONDecoder()
-        let values = lines.compactMap { line -> T? in
-            guard let data = String(line).data(using: .utf8) else { return nil }
-            return try? decoder.decode(T.self, from: data)
+        var rejectedLines = 0
+        let values = lines.enumerated().compactMap { offset, line -> T? in
+            guard let data = String(line).data(using: .utf8) else {
+                rejectedLines += 1
+                Self.logger.error("Rejected non-UTF-8 JSONL record at line \(offset + 1)")
+                return nil
+            }
+            do {
+                return try decoder.decode(T.self, from: data)
+            } catch {
+                rejectedLines += 1
+                Self.logger.error("Rejected JSONL record at line \(offset + 1): \(error.localizedDescription, privacy: .public)")
+                return nil
+            }
         }
-        guard !values.isEmpty else { throw makeError("No valid JSON lines") }
+        if rejectedLines > 0 {
+            Self.logger.warning("Decoded \(values.count) JSONL records and rejected \(rejectedLines)")
+        }
+        if values.isEmpty, rejectedLines > 0 {
+            throw makeError("No valid JSON lines; rejected \(rejectedLines) malformed records")
+        }
         return values
+    }
+
+    private func readRemoteFile(_ relativePath: String, tailLimit: Int? = nil) async throws -> String {
+        let path = shellPath(projectPath) + "/" + relativePath
+        let readCommand: String
+        if let tailLimit {
+            readCommand = "tail -n \(clampedLimit(tailLimit)) -- \(path)"
+        } else {
+            readCommand = "cat -- \(path)"
+        }
+        let command = "if test -r \(path); then \(readCommand); fi"
+        return try await ssh.run(command: command)
+    }
+
+    private func logHardwareDiagnostics(_ status: WorkstationStatus) {
+        guard let memory = status.memory else {
+            Self.logger.error("albertlmctl system response is missing the memory object")
+            return
+        }
+
+        let missingFields = [
+            ("total", memory.total),
+            ("used", memory.used),
+            ("available", memory.available),
+            ("usage", memory.usage)
+        ].compactMap { name, value in
+            guard let value, !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return name }
+            return nil
+        }
+
+        if missingFields.isEmpty {
+            Self.logger.debug("Decoded system memory total=\(memory.total ?? "N/A", privacy: .public) used=\(memory.used ?? "N/A", privacy: .public) available=\(memory.available ?? "N/A", privacy: .public) usage=\(memory.usage ?? "N/A", privacy: .public)")
+        } else {
+            Self.logger.error("albertlmctl system memory object is missing fields: \(missingFields.joined(separator: ", "), privacy: .public)")
+        }
     }
 
     private func shellPath(_ path: String) -> String {
@@ -256,20 +340,6 @@ actor AlbertLMNodeService {
         guard let value = stringValue(row, at: index) else { return nil }
         let cleaned = value.replacingOccurrences(of: "[^0-9.+-]", with: "", options: .regularExpression)
         return Double(cleaned)
-    }
-}
-
-private struct CheckpointEnvelope: Decodable {
-    let checkpoints: [Checkpoint]
-
-    enum CodingKeys: String, CodingKey { case checkpoints, items, files }
-
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        checkpoints = try values.decodeIfPresent([Checkpoint].self, forKey: .checkpoints)
-            ?? values.decodeIfPresent([Checkpoint].self, forKey: .items)
-            ?? values.decodeIfPresent([Checkpoint].self, forKey: .files)
-            ?? []
     }
 }
 
