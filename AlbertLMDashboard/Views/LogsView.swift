@@ -120,10 +120,5 @@ private struct LogTextView: NSViewRepresentable {
                 height: max(scrollView.contentSize.height, ceil(usedSize.height) + 28)
             ))
         }
-
-        DispatchQueue.main.async {
-            scrollView.contentView.scroll(to: .zero)
-            scrollView.reflectScrolledClipView(scrollView.contentView)
-        }
     }
 }
