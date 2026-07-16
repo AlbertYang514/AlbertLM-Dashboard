@@ -28,6 +28,7 @@ enum NodeServiceError: LocalizedError {
     case invalidEvaluationLatest(String)
     case invalidEvaluationMetrics(String)
     case invalidGeneratedSamples(String)
+    case invalidTrainingLog(String)
 
     var errorDescription: String? {
         switch self {
@@ -43,11 +44,18 @@ enum NodeServiceError: LocalizedError {
         case .invalidEvaluationLatest(let detail): "Invalid eval_latest.json: \(detail)"
         case .invalidEvaluationMetrics(let detail): "Invalid eval_metrics.jsonl: \(detail)"
         case .invalidGeneratedSamples(let detail): "Invalid samples.jsonl: \(detail)"
+        case .invalidTrainingLog(let detail): "Invalid training log response: \(detail)"
         }
     }
 }
 
+struct TrainingLogPage: Sendable {
+    let content: String
+    let totalLines: Int
+}
+
 actor AlbertLMNodeService {
+    static let trainingLogLinesPerPage = 8_000
     private static let logger = Logger(subsystem: "com.albertyang.AlbertLMDashboard", category: "NodeService")
     private let ssh: SSHService
     private var projectPath: String
@@ -215,10 +223,16 @@ actor AlbertLMNodeService {
         return try decodeJSONLines(text, as: SystemHistorySample.self, error: NodeServiceError.invalidSystemHistory)
     }
 
-    func trainingLog() async throws -> String {
-        // train.log is also append-only; the Logs screen is expected to expose the
-        // complete run rather than a moving tail window.
-        try await readRemoteFile("logs/train.log")
+    func trainingLogPage(_ page: Int, linesPerPage: Int = trainingLogLinesPerPage) async throws -> TrainingLogPage {
+        let safePage = max(page, 0)
+        let safeLinesPerPage = min(max(linesPerPage, 1), Self.trainingLogLinesPerPage)
+        let path = shellPath(projectPath) + "/logs/train.log"
+        let firstLine = safePage * safeLinesPerPage + 1
+        let lastLine = firstLine + safeLinesPerPage - 1
+
+        async let totalLines = trainingLogLineCount(at: path)
+        async let content = readRemoteFileLines(at: path, firstLine: firstLine, lastLine: lastLine)
+        return try await TrainingLogPage(content: content, totalLines: totalLines)
     }
 
     private func clampedLimit(_ value: Int) -> Int {
@@ -266,6 +280,20 @@ actor AlbertLMNodeService {
             readCommand = "cat -- \(path)"
         }
         let command = "if test -r \(path); then \(readCommand); fi"
+        return try await ssh.run(command: command)
+    }
+
+    private func trainingLogLineCount(at path: String) async throws -> Int {
+        let command = "if test -r \(path); then wc -l < \(path); else printf '0\\n'; fi"
+        let output = try await ssh.run(command: command)
+        guard let count = Int(output.trimmingCharacters(in: .whitespacesAndNewlines)), count >= 0 else {
+            throw NodeServiceError.invalidTrainingLog("Could not read the log line count.")
+        }
+        return count
+    }
+
+    private func readRemoteFileLines(at path: String, firstLine: Int, lastLine: Int) async throws -> String {
+        let command = "if test -r \(path); then sed -n '\(firstLine),\(lastLine)p' -- \(path); fi"
         return try await ssh.run(command: command)
     }
 

@@ -163,6 +163,10 @@
 "SSD" = "SSD";
 "Complete training output read from the remote log file." = "Complete training output read from the remote log file.";
 "Run View Logs to read train.log from the beginning." = "Run View Logs to read train.log from the beginning.";
+"Loading log page…" = "Loading log page…";
+"Previous" = "Previous";
+"Next" = "Next";
+"Page %lld of %lld · 8,000 lines per page" = "Page %lld of %lld · 8,000 lines per page";
 "Train Loss" = "Train Loss";
 "Validation Loss" = "Validation Loss";
 "Perplexity" = "Perplexity";

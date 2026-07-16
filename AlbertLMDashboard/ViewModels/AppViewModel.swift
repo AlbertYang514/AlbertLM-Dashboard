@@ -26,9 +26,12 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var teacherErrors: [TeacherKind: String] = [:]
     @Published private(set) var busyTeachers: Set<TeacherKind> = []
     @Published private(set) var trainingLogOutput = ""
+    @Published private(set) var trainingLogPage = 0
+    @Published private(set) var trainingLogPageCount = 0
     @Published private(set) var controllerResponse = ""
     @Published private(set) var isRefreshing = false
     @Published private(set) var isTrainingRefreshing = false
+    @Published private(set) var isRefreshingTrainingLog = false
     @Published private(set) var isTrainingActionRunning = false
     @Published private(set) var isGeneratingDataset = false
     @Published private(set) var datasetGenerationResponse = ""
@@ -254,9 +257,20 @@ final class AppViewModel: ObservableObject {
         datasetGenerationResponse = ""
     }
 
-    func refreshTrainingLog() async {
-        await performNodeRead { [self] in
-            trainingLogOutput = try await nodeService.trainingLog()
+    func refreshTrainingLog(page: Int = 0) async {
+        guard !isRefreshingTrainingLog else { return }
+        isRefreshingTrainingLog = true
+        defer { isRefreshingTrainingLog = false }
+        do {
+            let result = try await nodeService.trainingLogPage(page)
+            trainingLogOutput = result.content
+            trainingLogPageCount = result.totalLines == 0 ? 0 : (result.totalLines + AlbertLMNodeService.trainingLogLinesPerPage - 1) / AlbertLMNodeService.trainingLogLinesPerPage
+            trainingLogPage = min(max(page, 0), max(trainingLogPageCount - 1, 0))
+            connectionState = .online
+            lastConnectedAt = Date()
+        } catch {
+            presentedError = error.localizedDescription
+            connectionState = .offline(error.localizedDescription)
         }
     }
 
