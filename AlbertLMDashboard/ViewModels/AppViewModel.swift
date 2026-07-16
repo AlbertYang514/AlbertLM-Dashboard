@@ -28,6 +28,7 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var trainingLogOutput = ""
     @Published private(set) var trainingLogPage = 0
     @Published private(set) var trainingLogPageCount = 0
+    @Published private(set) var trainingLogRevision = 0
     @Published private(set) var controllerResponse = ""
     @Published private(set) var isRefreshing = false
     @Published private(set) var isTrainingRefreshing = false
@@ -266,6 +267,7 @@ final class AppViewModel: ObservableObject {
             trainingLogOutput = result.content
             trainingLogPageCount = result.totalLines == 0 ? 0 : (result.totalLines + AlbertLMNodeService.trainingLogLinesPerPage - 1) / AlbertLMNodeService.trainingLogLinesPerPage
             trainingLogPage = min(max(page, 0), max(trainingLogPageCount - 1, 0))
+            trainingLogRevision += 1
             connectionState = .online
             lastConnectedAt = Date()
         } catch {

@@ -166,7 +166,7 @@
 "Loading log page…" = "正在加载日志页…";
 "Previous" = "上一页";
 "Next" = "下一页";
-"Page %lld of %lld · 8,000 lines per page" = "第 %lld / %lld 页 · 每页 8,000 行";
+"Page %lld / %lld · 8,000 lines per page" = "第 %lld 页/共 %lld 页 · 每页 8,000 行";
 "Train Loss" = "训练损失";
 "Validation Loss" = "验证损失";
 "Perplexity" = "困惑度";
