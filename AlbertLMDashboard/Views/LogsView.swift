@@ -43,7 +43,7 @@ struct LogsView: View {
                 Spacer()
 
                 if appModel.trainingLogPageCount > 0 {
-                    Text("Page \(appModel.trainingLogPage + 1) / \(appModel.trainingLogPageCount) · 8,000 lines per page")
+                    Text("Page \(appModel.trainingLogPage + 1) / \(appModel.trainingLogPageCount) · 2,500 lines per page")
                         .foregroundStyle(.secondary)
                 }
 

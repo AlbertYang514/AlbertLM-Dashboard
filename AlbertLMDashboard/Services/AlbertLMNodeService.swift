@@ -55,7 +55,7 @@ struct TrainingLogPage: Sendable {
 }
 
 actor AlbertLMNodeService {
-    static let trainingLogLinesPerPage = 8_000
+    static let trainingLogLinesPerPage = 2_500
     private static let logger = Logger(subsystem: "com.albertyang.AlbertLMDashboard", category: "NodeService")
     private let ssh: SSHService
     private var projectPath: String

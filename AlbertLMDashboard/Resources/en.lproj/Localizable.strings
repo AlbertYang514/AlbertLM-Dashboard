@@ -166,7 +166,7 @@
 "Loading log page…" = "Loading log page…";
 "Previous" = "Previous";
 "Next" = "Next";
-"Page %lld / %lld · 8,000 lines per page" = "Page %lld / %lld · 8,000 lines per page";
+"Page %lld / %lld · 2,500 lines per page" = "Page %lld / %lld · 2,500 lines per page";
 "Train Loss" = "Train Loss";
 "Validation Loss" = "Validation Loss";
 "Perplexity" = "Perplexity";
