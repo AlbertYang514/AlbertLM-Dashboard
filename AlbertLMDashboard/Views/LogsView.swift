@@ -6,7 +6,7 @@ struct LogsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .bottom) {
-                PageHeader(title: "Logs", subtitle: "Recent training output read from the remote log file.")
+                PageHeader(title: "Logs", subtitle: "Complete training output read from the remote log file.")
                 Button {
                     Task { await appModel.refreshTrainingLog() }
                 } label: {
@@ -17,7 +17,7 @@ struct LogsView: View {
             ScrollView([.vertical, .horizontal]) {
                 Group {
                     if appModel.trainingLogOutput.isEmpty {
-                        Text("Run View Logs to read recent lines from train.log.")
+                        Text("Run View Logs to read train.log from the beginning.")
                             .foregroundStyle(.secondary)
                     } else {
                         Text(appModel.trainingLogOutput)

@@ -161,14 +161,15 @@
 "Workstation telemetry collected through the remote controller." = "Workstation telemetry collected through the remote controller.";
 "Last system sample" = "Last system sample";
 "SSD" = "SSD";
-"Recent training output read from the remote log file." = "Recent training output read from the remote log file.";
-"Run View Logs to read recent lines from train.log." = "Run View Logs to read recent lines from train.log.";
+"Complete training output read from the remote log file." = "Complete training output read from the remote log file.";
+"Run View Logs to read train.log from the beginning." = "Run View Logs to read train.log from the beginning.";
 "Train Loss" = "Train Loss";
 "Validation Loss" = "Validation Loss";
 "Perplexity" = "Perplexity";
 "Latest Evaluation" = "Latest Evaluation";
 "Latest Sample" = "Latest Sample";
 "Generated Samples" = "Generated Samples";
+"Sample Step" = "Sample Step";
 "Latest Checkpoint" = "Latest Checkpoint";
 "Evaluation Step" = "Evaluation Step";
 "Evaluation Tokens" = "Evaluation Tokens";

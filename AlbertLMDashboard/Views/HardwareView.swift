@@ -17,8 +17,9 @@ struct HardwareView: View {
                     MetricRow(label: "Last system sample", value: timestamp)
                 }
 
+                cpuCard
+
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
-                    cpuCard
                     gpuCard
                     memoryCard
                     swapCard

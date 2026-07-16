@@ -10,10 +10,14 @@ struct DashboardView: View {
             VStack(alignment: .leading, spacing: 22) {
                 PageHeader(title: "AlbertLM Dashboard", subtitle: "Ludan No. 2 · Remote AI Training Node")
 
-                LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
+                HStack(alignment: .top, spacing: 16) {
                     serverCard
                     trainingCard
-                    cpuCard
+                }
+
+                cpuCard
+
+                LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
                     gpuCard
                     memoryCard
                     swapCard

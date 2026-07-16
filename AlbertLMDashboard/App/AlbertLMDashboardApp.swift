@@ -17,9 +17,10 @@ struct AlbertLMDashboardApp: App {
                 .environmentObject(settings)
                 .environmentObject(appModel)
                 .environment(\.locale, settings.language.locale)
-                .frame(minWidth: 980, minHeight: 680)
+                .frame(width: 1180, height: 780)
         }
         .defaultSize(width: 1180, height: 780)
+        .windowResizability(.contentSize)
 
         Settings {
             SettingsView()

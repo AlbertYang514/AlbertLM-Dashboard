@@ -165,8 +165,8 @@ actor AlbertLMNodeService {
         }
     }
 
-    func evaluationMetrics(limit: Int = 2_000) async throws -> [EvaluationMetric] {
-        let text = try await readRemoteFile("logs/eval_metrics.jsonl", tailLimit: limit)
+    func evaluationMetrics() async throws -> [EvaluationMetric] {
+        let text = try await readRemoteFile("logs/eval_metrics.jsonl")
         return try decodeJSONLines(text, as: EvaluationMetric.self, error: NodeServiceError.invalidEvaluationMetrics)
             .sorted { $0.optimizerStep < $1.optimizerStep }
     }
@@ -174,7 +174,10 @@ actor AlbertLMNodeService {
     func generatedSamples(limit: Int = 2_000) async throws -> [GeneratedSampleBatch] {
         let text = try await readRemoteFile("logs/samples.jsonl", tailLimit: limit)
         return try decodeJSONLines(text, as: GeneratedSampleBatch.self, error: NodeServiceError.invalidGeneratedSamples)
-            .sorted { $0.optimizerStep > $1.optimizerStep }
+            .sorted {
+                if $0.optimizerStep == $1.optimizerStep { return $0.timestamp > $1.timestamp }
+                return $0.optimizerStep > $1.optimizerStep
+            }
     }
 
     func experimentStatus() async throws -> ExperimentStatus {
@@ -200,8 +203,10 @@ actor AlbertLMNodeService {
         }
     }
 
-    func trainingMetrics(limit: Int = 500) async throws -> [TrainingMetric] {
-        let text = try await execute(arguments: [NodeCommand.metrics.rawValue, String(clampedLimit(limit))])
+    func trainingMetrics() async throws -> [TrainingMetric] {
+        // Metrics are append-only. Reading the file directly avoids the controller's
+        // tail limit, which otherwise makes early steps disappear as training grows.
+        let text = try await readRemoteFile("logs/metrics.jsonl")
         return try decodeJSONLines(text, as: TrainingMetric.self, error: NodeServiceError.invalidMetrics)
     }
 
@@ -210,8 +215,10 @@ actor AlbertLMNodeService {
         return try decodeJSONLines(text, as: SystemHistorySample.self, error: NodeServiceError.invalidSystemHistory)
     }
 
-    func trainingLog(limit: Int = 500) async throws -> String {
-        try await execute(arguments: [NodeCommand.logs.rawValue, String(clampedLimit(limit))])
+    func trainingLog() async throws -> String {
+        // train.log is also append-only; the Logs screen is expected to expose the
+        // complete run rather than a moving tail window.
+        try await readRemoteFile("logs/train.log")
     }
 
     private func clampedLimit(_ value: Int) -> Int {

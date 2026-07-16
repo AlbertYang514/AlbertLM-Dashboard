@@ -161,14 +161,15 @@
 "Workstation telemetry collected through the remote controller." = "通过远程控制器采集的工作站硬件遥测。";
 "Last system sample" = "最近系统采样";
 "SSD" = "SSD";
-"Recent training output read from the remote log file." = "读取远程日志文件中的最近训练输出。";
-"Run View Logs to read recent lines from train.log." = "点击“查看日志”读取 train.log 的最近内容。";
+"Complete training output read from the remote log file." = "读取远程日志文件中的完整训练输出。";
+"Run View Logs to read train.log from the beginning." = "点击“查看日志”从头读取 train.log。";
 "Train Loss" = "训练损失";
 "Validation Loss" = "验证损失";
 "Perplexity" = "困惑度";
 "Latest Evaluation" = "最近评估";
 "Latest Sample" = "最近样例";
 "Generated Samples" = "生成样例";
+"Sample Step" = "样例步数";
 "Latest Checkpoint" = "最新检查点";
 "Evaluation Step" = "评估步数";
 "Evaluation Tokens" = "评估 Token";
