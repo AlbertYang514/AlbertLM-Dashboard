@@ -19,7 +19,8 @@ struct LogsView: View {
             ZStack(alignment: .topLeading) {
                 LogTextView(
                     text: appModel.trainingLogOutput,
-                    revision: appModel.trainingLogRevision
+                    revision: appModel.trainingLogRevision,
+                    scrollToLatest: appModel.trainingLogScrollsToLatest
                 )
 
                 if appModel.isRefreshingTrainingLog {
@@ -63,6 +64,7 @@ struct LogsView: View {
 private struct LogTextView: NSViewRepresentable {
     let text: String
     let revision: Int
+    let scrollToLatest: Bool
 
     final class Coordinator {
         var displayedRevision = -1
@@ -119,6 +121,14 @@ private struct LogTextView: NSViewRepresentable {
                 width: max(scrollView.contentSize.width, ceil(usedSize.width) + 28),
                 height: max(scrollView.contentSize.height, ceil(usedSize.height) + 28)
             ))
+        }
+
+        if scrollToLatest {
+            DispatchQueue.main.async {
+                let bottom = max(0, textView.bounds.height - scrollView.contentView.bounds.height)
+                scrollView.contentView.scroll(to: NSPoint(x: 0, y: bottom))
+                scrollView.reflectScrolledClipView(scrollView.contentView)
+            }
         }
     }
 }

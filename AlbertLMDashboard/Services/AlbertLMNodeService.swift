@@ -52,6 +52,7 @@ enum NodeServiceError: LocalizedError {
 struct TrainingLogPage: Sendable {
     let content: String
     let totalLines: Int
+    let page: Int
 }
 
 actor AlbertLMNodeService {
@@ -223,16 +224,16 @@ actor AlbertLMNodeService {
         return try decodeJSONLines(text, as: SystemHistorySample.self, error: NodeServiceError.invalidSystemHistory)
     }
 
-    func trainingLogPage(_ page: Int, linesPerPage: Int = trainingLogLinesPerPage) async throws -> TrainingLogPage {
-        let safePage = max(page, 0)
+    func trainingLogPage(_ requestedPage: Int? = nil, linesPerPage: Int = trainingLogLinesPerPage) async throws -> TrainingLogPage {
         let safeLinesPerPage = min(max(linesPerPage, 1), Self.trainingLogLinesPerPage)
         let path = shellPath(projectPath) + "/logs/train.log"
+        let totalLines = try await trainingLogLineCount(at: path)
+        let pageCount = totalLines == 0 ? 0 : (totalLines + safeLinesPerPage - 1) / safeLinesPerPage
+        let safePage = min(max(requestedPage ?? max(pageCount - 1, 0), 0), max(pageCount - 1, 0))
         let firstLine = safePage * safeLinesPerPage + 1
         let lastLine = firstLine + safeLinesPerPage - 1
-
-        async let totalLines = trainingLogLineCount(at: path)
-        async let content = readRemoteFileLines(at: path, firstLine: firstLine, lastLine: lastLine)
-        return try await TrainingLogPage(content: content, totalLines: totalLines)
+        let content = try await readRemoteFileLines(at: path, firstLine: firstLine, lastLine: lastLine)
+        return TrainingLogPage(content: content, totalLines: totalLines, page: safePage)
     }
 
     private func clampedLimit(_ value: Int) -> Int {
