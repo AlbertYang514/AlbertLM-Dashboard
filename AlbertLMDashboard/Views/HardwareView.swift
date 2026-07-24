@@ -61,13 +61,59 @@ struct HardwareView: View {
 
     private var gpuCard: some View {
         DashboardCard(title: "GPU", icon: "cpu") {
-            let gpu = appModel.workstationStatus.gpu
-            Text(display(gpu?.model)).font(.headline)
+            if appModel.gpus.isEmpty {
+                legacyGPUStatus
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    ForEach(Array(appModel.gpus.prefix(2).enumerated()), id: \.element.id) { index, gpu in
+                        compactGPUStatus(gpu, index: index)
+                        if index == 0 && appModel.gpus.count > 1 {
+                            Divider()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var legacyGPUStatus: some View {
+        let gpu = appModel.workstationStatus.gpu
+        return VStack(alignment: .leading, spacing: 8) {
+            Text(display(gpu?.model)).font(.headline).lineLimit(1)
             MetricRow(label: "GPU utilization", value: display(gpu?.utilization))
-            MetricRow(label: "VRAM used", value: display(gpu?.memoryUsed))
-            MetricRow(label: "VRAM total", value: display(gpu?.memoryTotal))
+            MetricRow(label: "VRAM", value: "\(display(gpu?.memoryUsed)) / \(display(gpu?.memoryTotal))")
             MetricRow(label: "GPU temperature", value: display(gpu?.temperature))
             MetricRow(label: "Power draw", value: display(gpu?.power))
+        }
+    }
+
+    private func compactGPUStatus(_ gpu: GPUStatus, index: Int) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("GPU \(index)")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Text(gpu.name)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(2)
+                .help(gpu.name)
+            compactMetric("Utilization", gpu.utilizationText)
+            compactMetric("VRAM", gpu.memoryText)
+            compactMetric("Temperature", gpu.temperatureText)
+            compactMetric("Power", gpu.powerText)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func compactMetric(_ label: LocalizedStringKey, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.caption.monospacedDigit())
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .textSelection(.enabled)
         }
     }
 

@@ -168,11 +168,13 @@ final class AppViewModel: ObservableObject {
 
     func refreshHardwareData() async {
         async let statusResult = capture { try await nodeService.hardwareStatus() }
+        async let gpuResult = capture { try await nodeService.gpu() }
         async let historyResult = capture { try await nodeService.systemHistory() }
-        let results = await (statusResult, historyResult)
+        let results = await (statusResult, gpuResult, historyResult)
         applyNodeResults([
             results.0.map { [self] value in workstationStatus = value },
-            results.1.map { [self] value in hardwareHistory = value }
+            results.1.map { [self] value in gpus = value },
+            results.2.map { [self] value in hardwareHistory = value }
         ])
     }
 
